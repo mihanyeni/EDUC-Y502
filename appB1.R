@@ -2,7 +2,7 @@
 
 # Course:        EDUC-Y 502 Intermediate statistics applied to education
 # File:          Lecture notes B.1 - Tabular & graphical summary representations
-#                of frequencies                                                 # <----- LINE 
+#                of frequencies
 # Author:        Justin Wild, Ph.D.
 # Date modified: 11.08.2023
 
@@ -17,9 +17,7 @@ library(schoolmath) # version 0.4.1
 
 # Load data ====================================================================
 
-filepath <- "/Users/wildden/Wildman/Work/IU Teaching/Y502 - Intermediate Statistics Applied to Education/Data/"
-setsdata <- openxlsx::read.xlsx(xlsxFile = paste0("/Users/wildden/Google Drive/Y502 Lecture notes/",
-                                                  "setup_y502.xlsx"),
+setsdata <- openxlsx::read.xlsx(xlsxFile = "data/setup_y502.xlsx",
                                 sheet = "datasets", startRow = 1, colNames = T,
                                 rowNames = F, rows = 1:6, cols = 1:4)
 datarow1 <- 2
@@ -27,12 +25,12 @@ datayear <- setsdata[datarow1, 2]
 datapart <- "STU"
 var_achv <- setsdata[datarow1, 3]
 
-dataset1 <- list.files(filepath, setsdata[datarow1, 1])
+dataset1 <- list.files("data", setsdata[datarow1, 1])
 dataset1 <- grep(pattern = datayear, x = dataset1, value = T)
 dataset1 <- grep(pattern = "Rdata",  x = dataset1, value = T)
 dataset1 <- grep(pattern = datapart, x = dataset1, value = T)
 
-df1 <- get(load(paste0(filepath, dataset1)))
+df1 <- get(load(paste0("data/", dataset1)))
 
 # Create function to create table then use in server ===========================
 
