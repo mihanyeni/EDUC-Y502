@@ -21,7 +21,7 @@ library(schoolmath)  # version 0.4.1
 
 var_scale <- "S_NISB"
 
-df1 <- get(load("/Users/wildden/Wildman/Work/IU Teaching/Y502 - Intermediate Statistics Applied to Education/Data/ICILS_2018_USA_Sch_Stu.Rdata"))
+df1 <- get(load("data/ICILS_2018_USA_Sch_Stu.Rdata"))
 
 # Create function to create table then use in server ===========================
 
