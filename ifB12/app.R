@@ -4,7 +4,7 @@
 # File:          Lecture notes B.1 - Tabular & graphical summary representations
 #                of frequencies
 # Author:        Justin Wild, Ph.D.
-# Date modified: 20.08.2023
+# Date modified: 21.08.2023
 # Purpose:       Create Interactive Figure B.1.2
 
 # Load packages ================================================================
@@ -19,107 +19,91 @@ library(schoolmath)  # version 0.4.1
 
 # Load data ====================================================================
 
-var_scale <- "S_NISB"
+vbl <- "S_NISB"
 
-df1 <- get(load("data/ICILS_2018_USA_Sch_Stu.Rdata"))
+df1 <- get(load("/Users/wildden/Wildman/Work/IU Teaching/Y502 - Intermediate Statistics Applied to Education/Data/ICILS_2018_USA_Sch_Stu.Rdata"))
 
 # Create function to create table then use in server ===========================
 
 group.freq.table <- function(min, max, iwd, dfr, vrb) {
-
+  
   # Create empty grouped frequency table with column names
   
-  gf_data <- as.data.frame(matrix(data = 0, nrow = ((max - min) / iwd) - 1, ncol = 6))
-    
+  gf_data <- as.data.frame(matrix(data = 0, nrow = 1, ncol = 6))
+  
   colnames(gf_data) <- c("apparent limits", "real limits", "f",
                          "rel f (percentage)", "cumulative f",
                          "cumulative f (percentage)")
-
+  
   # Fill empty grouped frequency table based on user input
-
+  
   for (i in 0:((max - min) / iwd) - 1) {
-
+    
     # Get a character string of apparent limits
     
-    if (min + iwd*(i-1) < -3) {
-
-      gf_data[i + 1,1] <- paste0("-3.00 - ",
-                                 format(round(min + iwd*(i + 1), digits = 2),
-                                        nsmall = 2))
-
-    } else {
-
-      gf_data[i + 1,1] <- paste0(min + iwd*i + 0.01, " - ",
-                                 format(round(min + iwd*i + iwd, digits = 2),
-                                        nsmall = 2))
+    gf_data[i + 1,1] <- paste0(format(round(min + iwd*i + 0.01, digits = 2),
+                                      nsmall = 2),
+                               " - ",
+                               format(round(min + iwd*i + iwd, digits = 2),
+                                      nsmall = 2))
     
-    }
-
     # Get a character string of real limits
     
-    if (min + iwd*(i-1) < -3) {
-      
-      gf_data[i + 1,2] <- paste0("-3.000 - ", min + iwd*(i + 1) + 0.005)
-      
-    } else {
-      
-      gf_data[i + 1,2] <- paste0(min + iwd*i + 0.01 - 0.005, " - ", min + iwd*i + iwd + 0.005)
-      
-    }
-
+    gf_data[i + 1,2] <- paste0(format(round(min + iwd*i + 0.01 - 0.005,
+                                            digits = 3),
+                                      nsmall = 3),
+                               " - ",
+                               format(round(min + iwd*i + iwd + 0.005,
+                                            digits = 3),
+                                      nsmall = 3))
+    
     # Get bounds for frequency counts
     
-    if (min + iwd*(i-1) < -3) {
-
-      lo_bound <- -3
-      hi_bound <- min + iwd*(i + 1) - 0.005
-
-    } else {
-      
-      lo_bound <- min + iwd*i + 0.01 - 0.005
-      hi_bound <- min + iwd*i + iwd + 0.005
-      
-    }
-
+    lo_bound <- min + iwd*i + 0.01 - 0.005
+    hi_bound <- min + iwd*i + iwd + 0.005
+    
     # Get frequency count
-
-    gf_data[i + 1,3] <- sum(dfr[,vrb] >= lo_bound & dfr[,vrb] < hi_bound, na.rm = T)
-
+    
+    gf_data[i + 1,3] <- sum(dfr[,vrb] >= lo_bound &
+                              dfr[,vrb] < hi_bound, na.rm = T)
+    
     # Get frequency as a percentage proportion
-
+    
     gf_data[i + 1,4] <-
       paste0(format(round((gf_data[i + 1,3] / nrow(dfr))*100, digits = 1),
                     nsmall = 1), " %")
-
+    
     # Get cumulative frequency count
-
+    
     gf_data[i + 1,5] <- if (i != 0) {
-
+      
       gf_data[i + 1,3] + gf_data[i,5]
-
+      
     } else {
-
+      
       gf_data[i + 1,3]
-
+      
     }
-
+    
     # Get cumulative frequency as a percentage proportion
-
+    
     gf_data[i + 1,6] <-
       paste0(format(round((gf_data[i + 1,5] / nrow(dfr)) * 100, digits = 1),
                     nsmall = 1), " %")
     
   }
-
+  
   as.data.frame(gf_data)
-
+  
 }
 
 # ==============================================================================
 # ===========================   USER INTERFACE   ===============================
 # ==============================================================================
 
-ui <- fluidPage(theme = shinytheme("cosmo"),
+ui <- fluidPage(
+  
+  theme = shinytheme("cosmo"),
   
   # Title
   
@@ -175,13 +159,13 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                    label = "Create grouped frequency table")
       
     )
-      
+    
   ),
   
   # 03. Create table =======================================
-
+  
   DT::dataTableOutput(outputId = "table")
-    
+  
 )
 
 #===============================================================================
@@ -191,7 +175,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
 server <- function(input, output, session){
   
   # 02a. Create warning about minimum ======================
-
+  
   textWarningMinimum <- eventReactive(input$checkInputs, {
     
     if (input$minimum < -3) {
@@ -215,7 +199,7 @@ server <- function(input, output, session){
   })
   
   output$warningMinimum <- renderUI({textWarningMinimum()})
-
+  
   # 02b. Create warning about maximum ======================
   
   textWarningMaximum <- eventReactive(input$checkInputs, {
@@ -239,7 +223,7 @@ server <- function(input, output, session){
     }
     
   })
-
+  
   output$warningMaximum <- renderUI({textWarningMaximum()})
   
   # 02c. Create warning about interval =====================
@@ -270,16 +254,19 @@ server <- function(input, output, session){
   output$warningInterval <- renderUI({textWarningInterval()})
   
   # 03. Create table =======================================
-
+  
   gfTable <- shiny::eventReactive(input$createTable, {
-
-      group.freq.table(input$minimum, input$maximum, input$intwidth, df1,
-                       var_scale)
-
+    
+    group.freq.table(input$minimum, input$maximum, input$intwidth, df1,
+                     vbl)
+    
   })
-
+  
   output$table <- DT::renderDataTable(
     gfTable(),
+    caption = paste0("S_NISB - ",
+                     attr(df1$S_NISB, "label"),
+                     ", n = ", length(na.omit(df1$S_NISB))),
     options = list(
       columnDefs = list(list(className = "dt-left",  targets = c(1:2)),
                         list(className = "dt-right", targets = c(3:6))),
