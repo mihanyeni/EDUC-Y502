@@ -4,7 +4,7 @@
 # File:          Lecture notes B.1 - Tabular & graphical summary representations
 #                of frequencies
 # Author:        Justin Wild, Ph.D.
-# Date modified: 20.08.2023
+# Date modified: 21.08.2023
 # Purpose:       Create Interactive Figure B.1.1
 
 # Load packages ================================================================
@@ -19,9 +19,9 @@ library(schoolmath)  # version 0.4.1
 
 # Load data ====================================================================
 
-var_achv <- "CIL"
+vbl <- "CIL"
 
-df1 <- get(load("data/ICILS_2018_USA_Sch_Stu.Rdata"))
+df1 <- get(load("/Users/wildden/Wildman/Work/IU Teaching/Y502 - Intermediate Statistics Applied to Education/Data/ICILS_2018_USA_Sch_Stu.Rdata"))
 
 # Create function to create table then use in server ===========================
 
@@ -29,7 +29,7 @@ group.freq.table <- function(dcm, min, max, iwd, dfr, vrb) {
 
   # Create empty grouped frequency table with column names
 
-  gf_data <- as.data.frame(matrix(data = 0, nrow = ((max - min) / iwd) + 1, ncol = 7))
+  gf_data <- as.data.frame(matrix(data = 0, nrow = 1, ncol = 7))
 
   colnames(gf_data) <- c("apparent limits", "real limits", "f",
                          "rel f (proportion)", "rel f (percentage)",
@@ -37,54 +37,68 @@ group.freq.table <- function(dcm, min, max, iwd, dfr, vrb) {
 
   # Fill empty grouped frequency table based on user input
 
-  for (i in 0:((max - min) / iwd)) {
+  for (i in 0:((max - min) / iwd) - 1) {
 
-    # Get a character string of apparent limits
+    # Get a character string of apparent limits and real limits, and bounds for
+    # frequency counts
     
-    if (min + iwd*(i-1) + 1 < 0) {
-
-      gf_data[i + 1,1] <- paste0(0, " - ", min + iwd*i)
-
-    } else {
-
-      gf_data[i + 1,1] <- paste0(min + iwd*(i-1) + 1, " - ", min + iwd*i)
-    
+    if (dcm == 0) {
+      
+      gf_data[i + 1,1] <- paste0(format(round(min + iwd*i + 1, digits = 0),
+                                        nsmall = 0),
+                                 " - ",
+                                 format(round(min + iwd*i + iwd, digits = 0),
+                                 nsmall = 0))
+      
+      gf_data[i + 1,2] <- paste0(format(round(min + iwd*i + 1 - 0.5, digits = 1),
+                                        nsmall = 1),
+                                 " - ", 
+                                 format(round(min + iwd*i + iwd + 0.5, digits = 1),
+                                        nsmall = 1))
+      
+      lo_bound <- min + iwd*i + 1 - 0.5
+      hi_bound <- min + iwd*i + iwd + 0.5
+      
+    } else if (dcm == 1) {
+      
+      gf_data[i + 1,1] <- paste0(format(round(min + iwd*i + 0.1, digits = 1),
+                                        nsmall = 1),
+                                 " - ",
+                                 format(round(min + iwd*i + iwd, digits = 1),
+                                        nsmall = 1))
+      
+      gf_data[i + 1,2] <- paste0(format(round(min + iwd*i + 0.1 - 0.05,
+                                              digits = 2),
+                                        nsmall = 2),
+                                 " - ",
+                                 format(round(min + iwd*i + iwd + 0.05,
+                                              digits = 2),
+                                        nsmall = 2))
+      
+      lo_bound <- min + iwd*i + 0.1 - 0.05
+      hi_bound <- min + iwd*i + iwd + 0.05
+      
+    } else if (dcm == 2) {
+      
+      gf_data[i + 1,1] <- paste0(format(round(min + iwd*i + 0.01, digits = 2),
+                                        nsmall = 2),
+                                 " - ",
+                                 format(round(min + iwd*i + iwd, digits = 2),
+                                        nsmall = 2))
+      
+      gf_data[i + 1,2] <- paste0(format(round(min + iwd*i + 0.01 - 0.005,
+                                              digits = 3),
+                                        nsmall = 3),
+                                 " - ",
+                                 format(round(min + iwd*i + iwd + 0.005,
+                                              digits = 3),
+                                        nsmall = 3))
+      
+      lo_bound <- min + iwd*i + 0.01 - 0.005
+      hi_bound <- min + iwd*i + iwd + 0.005
+      
     }
-
-    # Get a character string of real limits
     
-    if (min + iwd*(i-1) + 1 < 0) {
-      
-      if (dcm != 2) {
-
-        gf_data[i + 1,2] <- paste0("0.0 - ", min + iwd*i + 0.5)
-      
-      } else {
-        
-        gf_data[i + 1,2] <- paste0("0.00 - ", min + iwd*i + 0.5)
-        
-      }
-
-    } else {
-      
-      gf_data[i + 1,2] <- paste0(min + iwd*(i-1) + 0.5, " - ", min + iwd*i + 0.5)
-      
-    }
-
-    # Get bounds for frequency counts
-    
-    if (min + iwd*(i-1) + 1 < 0) {
-
-      lo_bound <- 0
-      hi_bound <- min + iwd*i     + 0.5
-
-    } else {
-      
-      lo_bound <- min + iwd*(i-1) + 0.5
-      hi_bound <- min + iwd*i     + 0.5
-      
-    }
-
     # Get frequency count
 
     gf_data[i + 1,3] <- sum(dfr[,vrb] >= lo_bound & dfr[,vrb] < hi_bound)
@@ -118,8 +132,6 @@ group.freq.table <- function(dcm, min, max, iwd, dfr, vrb) {
       paste0(format(round((gf_data[i + 1,6] / nrow(dfr)) * 100, digits = 1),
                     nsmall = 1), " %")
     
-    # if (i == ((max - min) / iwd) & gf_data[1,2] == 0) gf_data <- gf_data[-1,]
-
   }
 
   as.data.frame(gf_data)
@@ -355,21 +367,21 @@ server <- function(input, output, session){
     if (input$decimal == 0) {
 
       group.freq.table(input$decimal, input$minimum, input$maximum,
-                       input$intwidth, df1, var_achv)
+                       input$intwidth, df1, vbl)
 
     } else if (input$decimal == 1) {
 
       group.freq.table(input$decimal,
                        as.numeric(paste0(input$minimum,".",input$dcm10)),
                        as.numeric(paste0(input$maximum,".",input$dcm10)),
-                       input$intwidth, df1, var_achv)
+                       input$intwidth, df1, vbl)
 
     } else if (input$decimal == 2) {
 
       group.freq.table(input$decimal,
                        as.numeric(paste0(input$minimum,".",input$dcm10,input$dcm100)),
                        as.numeric(paste0(input$maximum,".",input$dcm10,input$dcm100)),
-                       input$intwidth, df1, var_achv)
+                       input$intwidth, df1, vbl)
 
     }
 
@@ -377,6 +389,9 @@ server <- function(input, output, session){
 
   output$table <- DT::renderDataTable(
     gfTable(),
+    caption = paste0("CIL - ",
+                     attr(df1$CIL, "label"),
+                     ", n = ", length(na.omit(df1$CIL))),
     options = list(
       columnDefs = list(list(className = "dt-left",  targets = c(1:2)),
                         list(className = "dt-right", targets = c(3:7))),
