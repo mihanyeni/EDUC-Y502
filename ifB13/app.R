@@ -17,7 +17,7 @@ library(shinythemes) # version 1.2.0
 
 # Load data ====================================================================
 
-df1 <- get(load("/Users/wildden/Wildman/Work/IU Teaching/Y502 - Intermediate Statistics Applied to Education/Data/ICILS_2018_USA_Sch_Stu.Rdata"))
+df1 <- get(load("data/ICILS_2018_USA_Sch_Stu.Rdata"))
 
 # Load objects =================================================================
 
