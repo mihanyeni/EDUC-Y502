@@ -15,9 +15,7 @@ library(stats)   # version 4.3.1
 
 # Load data ====================================================================
 
-setwd("/data")
-
-load("ICCS_2016_FIN_Sch_Stu.Rdata")
+load("data/ICCS_2016_FIN_Sch_Stu.Rdata")
 
 # Load function ================================================================
 
