@@ -15,10 +15,7 @@ library(stats)   # version 4.3.1
 
 # Load data ====================================================================
 
-setwd("/Users/wildden/Wildman/Work/IU Teaching/Y502 - Intermediate Statistics Applied to Education/Data") # copy the directory path of where you have downloaded the course R
-          # data files (shown below) and paste it between the quotation marks
-          # in the 'setwd()' function - see Figure A.15 of "Lab A - Intro to R"
-          # notes
+setwd("/data")
 
 load("ICCS_2016_FIN_Sch_Stu.Rdata")
 
